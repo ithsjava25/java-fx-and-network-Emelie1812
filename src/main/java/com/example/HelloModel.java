@@ -3,6 +3,8 @@ package com.example;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.github.cdimascio.dotenv.Dotenv;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import tools.jackson.databind.ObjectMapper;
@@ -20,21 +22,30 @@ import java.util.Objects;
  */
 public class HelloModel {
 
-
-        private final String hostName;
-        private final HttpClient http = HttpClient.newHttpClient();
-        private final ObjectMapper mapper = new ObjectMapper();
-
+        private final NtfyConnection connection;
         private final ObservableList<NtfyMessageDto> messages = FXCollections.observableArrayList();
+        private final StringProperty messageToSend = new SimpleStringProperty();
 
-        public HelloModel() {
-            Dotenv dotenv = Dotenv.load();
-            hostName = Objects.requireNonNull(dotenv.get("HOST_NAME"));
+        public HelloModel(NtfyConnection connection) {
+
             receiveMessage();
+            this.connection = connection;
         }
 
     public ObservableList<NtfyMessageDto> getMessages() {
         return messages;
+    }
+
+    public String getMessageToSend() {
+        return messageToSend.get();
+    }
+
+    public StringProperty messageToSendProperty() {
+        return messageToSend;
+    }
+
+    public void setMessageToSend(String message) {
+            messageToSend.set(message);
     }
 
     /**
@@ -48,36 +59,10 @@ public class HelloModel {
 
     public void sendMessage() {
 
-        HttpRequest httpRequest = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString("Hello World"))
-                .header("Cache", "no")
-                .uri(URI.create(hostName + "/mytopic"))
-                .build();
-        try {
-            var response = http.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        }
-        catch (IOException e) {
-            System.out.println("Error sending message");
-        }
-        catch (InterruptedException e) {
-            System.out.println("Interrupted sending message");
-        }
+          connection.send(messageToSend.get());
     }
 
     public void receiveMessage() {
-        HttpRequest httpRequest = HttpRequest.newBuilder()
-                .GET()
-                .uri(URI.create(hostName + "/mytopic/json"))
-                .build();
-
-        http.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofLines())
-                .thenAccept(response-> response.body()
-                        .map(s->
-                            mapper.readValue(s, NtfyMessageDto.class))
-                        .filter(message-> message.event().equals("message"))
-                        .peek(System.out::println)
-                        .forEach(s->
-                                Platform.runLater(()-> messages.add(s))));
+        connection.receive(m-> Platform.runLater(()->messages.add(m)));
     }
-
 }
