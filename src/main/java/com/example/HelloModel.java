@@ -28,8 +28,8 @@ public class HelloModel {
 
         public HelloModel(NtfyConnection connection) {
 
-            receiveMessage();
             this.connection = connection;
+            receiveMessage();
         }
 
     public ObservableList<NtfyMessageDto> getMessages() {
