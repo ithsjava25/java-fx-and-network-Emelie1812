@@ -1,0 +1,36 @@
+.root {
+    -fx-background-color: #f0f0f0;
+    -fx-padding: 20;
+}
+
+.label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #333;
+}
+
+.text-field {
+    -fx-font-size: 14px;
+    -fx-padding: 8;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: #aaaaaa;
+}
+
+.button {
+    -fx-background-color: #4287f5;
+    -fx-text-fill: white;
+    -fx-padding: 8 12;
+    -fx-background-radius: 6;
+}
+
+.button:hover {
+    -fx-background-color: #2f6edb;
+}
+
+.list-view {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 8;
+}
