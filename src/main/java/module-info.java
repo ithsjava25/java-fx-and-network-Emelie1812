@@ -2,7 +2,6 @@ module hellofx {
     requires javafx.controls;
     requires javafx.fxml;
     requires io.github.cdimascio.dotenv.java;
-    requires jdk.unsupported.desktop;
     requires java.net.http;
     requires tools.jackson.databind;
     requires javafx.graphics;
